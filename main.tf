@@ -1,3 +1,10 @@
+
+provider "aws" {
+  alias = "tokyo"
+  region = "ap-northeast-1"
+}
+
+
 module "operator" {
   source = "./modules/add-ons/adot-operator"
   count  = var.enable_amazon_eks_adot ? 1 : 0
@@ -12,12 +19,15 @@ resource "aws_prometheus_workspace" "this" {
 
   alias = local.name
   tags  = var.tags
+
+  provider = aws.tokyo
 }
 
 resource "aws_prometheus_alert_manager_definition" "this" {
   count = var.enable_alertmanager ? 1 : 0
 
   workspace_id = local.amp_ws_id
+  provider = aws.tokyo
 
   definition = <<EOF
 alertmanager_config: |
